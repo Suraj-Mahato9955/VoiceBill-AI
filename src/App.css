@@ -780,3 +780,32 @@
     font-size: 11px;
   }
 }
+
+.register-message {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.register-message p {
+  margin: 4px 0;
+}
+
+.register-error {
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.register-success {
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+}
+
+.register-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
