@@ -1,0 +1,432 @@
+.register-page {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  min-height: 100vh;
+  background: #f3f7ff;
+}
+
+/* LEFT PANEL */
+
+.register-brand-panel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 650px;
+  padding: 42px 8%;
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    radial-gradient(
+      circle at 85% 70%,
+      rgba(28, 101, 218, 0.5),
+      transparent 38%
+    ),
+    linear-gradient(145deg, #123879, #061b49);
+}
+
+.register-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.register-logo-icon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 3px solid #159bff;
+  border-radius: 18px;
+  font-size: 28px;
+}
+
+.register-brand-logo h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.register-brand-logo h1 span {
+  color: #159bff;
+}
+
+.register-brand-logo p {
+  margin: 5px 0 0;
+  color: #c5d9ff;
+  font-size: 13px;
+}
+
+.register-hero {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 65px 0;
+}
+
+.register-badge {
+  display: inline-block;
+  padding: 10px 13px;
+  border: 1px solid rgba(107, 180, 255, 0.4);
+  border-radius: 25px;
+  background: rgba(30, 108, 220, 0.2);
+  color: #8bcaff;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.4px;
+}
+
+.register-hero h2 {
+  margin: 27px 0 18px;
+  font-size: clamp(34px, 3.2vw, 49px);
+  line-height: 1.18;
+  letter-spacing: -1.5px;
+}
+
+.register-hero h2 span {
+  color: #4db8ff;
+}
+
+.register-hero > p {
+  max-width: 390px;
+  color: #d4e1ff;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.register-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+  margin-top: 45px;
+}
+
+.register-benefits div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #e0ebff;
+  font-size: 14px;
+}
+
+.register-benefits span {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: rgba(45, 170, 255, 0.2);
+  color: #54c2ff;
+  font-weight: 800;
+}
+
+.register-brand-footer {
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: #c4d9ff;
+  font-size: 13px;
+}
+
+/* RIGHT PANEL */
+
+.register-form-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 6%;
+  background: linear-gradient(145deg, #f9fbff, #edf3ff);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 35px 7%;
+  border: 1px solid #ffffff;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 15px 45px rgba(44, 88, 155, 0.09);
+}
+
+.register-heading {
+  margin-bottom: 35px;
+}
+
+.register-heading h2 {
+  margin: 0 0 10px;
+  color: #0a1c44;
+  font-size: 29px;
+  letter-spacing: -0.8px;
+}
+
+.register-heading p {
+  margin: 0;
+  color: #7183a4;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.register-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 30px 0 20px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #e8eef9;
+  color: #193d7b;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.register-section-title > span {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background: #e8f1ff;
+  color: #1478ff;
+  font-size: 11px;
+}
+
+.register-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 17px;
+}
+
+.register-field {
+  min-width: 0;
+}
+
+.register-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.register-field label {
+  display: block;
+  margin-bottom: 9px;
+  color: #304a76;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.register-field input,
+.register-field textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #d7e2f5;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #142b53;
+  font-family: inherit;
+  font-size: 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.register-field input {
+  min-height: 48px;
+}
+
+.register-field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.register-field input:focus,
+.register-field textarea:focus {
+  border-color: #2682ff;
+  box-shadow: 0 0 0 3px rgba(38, 130, 255, 0.09);
+}
+
+.register-field input::placeholder,
+.register-field textarea::placeholder {
+  color: #9aa9c2;
+}
+
+.register-field small {
+  display: block;
+  margin-top: 8px;
+  color: #7d8eaa;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.register-show-password {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+  color: #61759c;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.register-show-password input {
+  width: 16px;
+  height: 16px;
+  accent-color: #1678ff;
+}
+
+.register-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 16px;
+  border-radius: 11px;
+  background: #eff5ff;
+}
+
+.register-privacy-note > span {
+  font-size: 19px;
+}
+
+.register-privacy-note p {
+  margin: 0;
+  color: #61759c;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.register-submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 24px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(100deg, #1878ff, #1471f5);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.register-submit-button span {
+  font-size: 21px;
+}
+
+.register-submit-button:hover {
+  transform: translateY(-2px);
+}
+
+.register-login-link {
+  margin: 25px 0 0;
+  color: #7183a4;
+  font-size: 12px;
+  text-align: center;
+}
+
+.register-login-link a {
+  color: #0876ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.register-login-link a:hover {
+  text-decoration: underline;
+}
+
+.register-copyright {
+  margin: 20px 0 0;
+  color: #8394b2;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1000px) {
+  .register-page {
+    grid-template-columns: 0.7fr 1.3fr;
+  }
+
+  .register-brand-panel {
+    padding: 35px 7%;
+  }
+
+  .register-brand-logo h1 {
+    font-size: 25px;
+  }
+
+  .register-hero h2 {
+    font-size: 34px;
+  }
+
+  .register-form-panel {
+    padding: 25px 4%;
+  }
+
+  .register-card {
+    padding: 30px 5%;
+  }
+}
+
+@media (max-width: 760px) {
+  .register-page {
+    grid-template-columns: 1fr;
+  }
+
+  .register-brand-panel {
+    position: relative;
+    height: auto;
+    min-height: auto;
+    padding: 30px 25px;
+  }
+
+  .register-hero {
+    padding: 40px 0;
+  }
+
+  .register-hero h2 {
+    font-size: 36px;
+  }
+
+  .register-benefits {
+    gap: 17px;
+    margin-top: 30px;
+  }
+
+  .register-form-panel {
+    padding: 25px 15px;
+  }
+
+  .register-card {
+    padding: 28px 22px;
+  }
+
+  .register-heading h2 {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 450px) {
+  .register-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .register-field.full-width {
+    grid-column: auto;
+  }
+
+  .register-brand-logo h1 {
+    font-size: 26px;
+  }
+
+  .register-hero h2 {
+    font-size: 32px;
+  }
+
+  .register-card {
+    padding: 25px 17px;
+  }
+}
