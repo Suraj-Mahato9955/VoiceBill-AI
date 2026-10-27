@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import "./Register.css";
 
 const API_URL = "http://localhost:5000/api/auth";
-
 function Register() {
   const [formData, setFormData] = useState({
     ownerName: "",
