@@ -1,15 +1,27 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Register from "./pages/Register";
+
 import { useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
+
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 import "./App.css";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [shopId, setShopId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!shopId.trim() || !password) {
@@ -17,12 +29,48 @@ function Login() {
       return;
     }
 
-    alert("Login UI is ready! Backend authentication will be added next.");
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            shopId: shopId.trim(),
+            password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Login failed.");
+      }
+
+      localStorage.setItem("voicebillToken", data.token);
+      localStorage.setItem(
+        "voicebillShop",
+        JSON.stringify(data.shop)
+      );
+
+      alert(`Welcome, ${data.shop.ownerName}! Login successful!`);
+
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      alert(error.message || "Unable to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegister = () => {
-  window.location.href = "/register";
-};
+    navigate("/register");
+  };
 
   const handleForgotPassword = () => {
     alert("Password recovery will be implemented in a later step.");
@@ -116,6 +164,7 @@ function Login() {
           <div className="billing-illustration">
             <div className="shop-awning">
               <div className="awning-top">GENERAL STORE</div>
+
               <div className="awning-stripes">
                 <span />
                 <span />
@@ -131,6 +180,7 @@ function Login() {
                   <span>▰</span>
                   <span>▰</span>
                 </div>
+
                 <div className="shelf">
                   <span>▰</span>
                   <span>▰</span>
@@ -259,7 +309,7 @@ function Login() {
                 <input
                   id="shopId"
                   type="text"
-                  placeholder="e.g. SHP1001 or sharma1001"
+                  placeholder="Enter your Shop ID or username"
                   value={shopId}
                   onChange={(e) => setShopId(e.target.value)}
                   autoComplete="username"
@@ -327,8 +377,13 @@ function Login() {
               </button>
             </div>
 
-            <button className="login-button" type="submit">
-              Login <span>→</span>
+            <button
+              className="login-button"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+              {!loading && <span>→</span>}
             </button>
           </form>
 
@@ -368,12 +423,27 @@ function Login() {
   );
 }
 
+function ProtectedDashboard() {
+  const token = localStorage.getItem("voicebillToken");
+  const shop = localStorage.getItem("voicebillShop");
+
+  if (!token || !shop) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Dashboard />;
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/dashboard"
+          element={<ProtectedDashboard />}
+        />
       </Routes>
     </BrowserRouter>
   );
