@@ -1,1 +1,219 @@
+.create-bill-page {
+  width: 100%;
+  padding: 30px;
+  color: #1e293b;
+}
 
+.bill-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.bill-page-header h1 {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.bill-page-header p {
+  color: #64748b;
+  margin: 0;
+}
+
+.bill-date {
+  color: #475569;
+  background: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.bill-form-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 22px;
+}
+
+.bill-form-card h2 {
+  font-size: 19px;
+  margin: 0 0 20px;
+}
+
+.customer-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.bill-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bill-field label,
+.discount-row label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bill-field input,
+.bill-table input,
+.discount-row input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  outline: none;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.bill-field input:focus,
+.bill-table input:focus,
+.discount-row input:focus {
+  border-color: #2563eb;
+}
+
+.items-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.items-heading h2 {
+  margin: 0;
+}
+
+.add-item-button,
+.generate-bill-button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 11px 17px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bill-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+}
+
+.bill-table th {
+  text-align: left;
+  background: #f8fafc;
+  color: #475569;
+  padding: 13px 10px;
+  font-size: 13px;
+}
+
+.bill-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.bill-table input {
+  min-width: 80px;
+}
+
+.item-amount {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.remove-item-button {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  padding: 9px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.bill-summary-card {
+  max-width: 480px;
+  margin-left: auto;
+}
+
+.summary-row,
+.summary-total,
+.discount-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.summary-row span {
+  color: #64748b;
+}
+
+.discount-row input {
+  width: 100px;
+}
+
+.summary-total {
+  border-bottom: none;
+  margin-top: 8px;
+}
+
+.summary-total strong {
+  color: #2563eb;
+  font-size: 23px;
+}
+
+.generate-bill-button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 14px;
+  font-size: 15px;
+}
+
+.add-item-button:hover,
+.generate-bill-button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 650px) {
+  .create-bill-page {
+    padding: 18px;
+  }
+
+  .bill-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .customer-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .bill-form-card {
+    padding: 17px;
+  }
+
+  .items-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bill-summary-card {
+    max-width: none;
+  }
+}
