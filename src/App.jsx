@@ -11,8 +11,7 @@ import {
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import "./App.css";
-import CreateBill from "./pages/CreateBill";
-
+import VoiceBill from "./pages/VoiceBill";
 function Login() {
   const navigate = useNavigate();
 
@@ -435,7 +434,7 @@ function ProtectedDashboard() {
   return <Dashboard />;
 }
 
-function ProtectedCreateBill() {
+function ProtectedVoiceBill() {
   const token = localStorage.getItem("voicebillToken");
   const shop = localStorage.getItem("voicebillShop");
 
@@ -443,7 +442,7 @@ function ProtectedCreateBill() {
     return <Navigate to="/" replace />;
   }
 
-  return <CreateBill />;
+  return <VoiceBill />;
 }
 
 function App() {
@@ -457,8 +456,8 @@ function App() {
           element={<ProtectedDashboard />}
         />
         <Route
-          path="/create-bill"
-          element={<ProtectedCreateBill />}
+          path="/voice-bill"
+          element={<ProtectedVoiceBill />}
         />
       </Routes>
     </BrowserRouter>
