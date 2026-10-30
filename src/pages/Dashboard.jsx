@@ -18,8 +18,8 @@ function Dashboard() {
     return null;
   }
 
-  const openCreateBill = () => {
-    navigate("/create-bill");
+  const openVoiceBill = () => {
+    navigate("/voice-bill");
   };
 
   return (
@@ -34,8 +34,8 @@ function Dashboard() {
             ▦ Dashboard
           </button>
 
-          <button className="nav-item" onClick={openCreateBill}>
-            ＋ Create New Bill
+          <button className="nav-item" onClick={openVoiceBill}>
+            🎙 VoiceBill AI
           </button>
 
           <button
@@ -83,8 +83,8 @@ function Dashboard() {
             <p>Ready to manage your shop with VoiceBill AI?</p>
           </div>
 
-          <button onClick={openCreateBill}>
-            + Create New Bill
+          <button onClick={openVoiceBill}>
+            🎙 Open VoiceBill AI
           </button>
         </section>
 
@@ -135,11 +135,11 @@ function Dashboard() {
           <div className="quick-actions">
             <h2>Quick Actions</h2>
 
-            <button onClick={openCreateBill}>
+            <button onClick={openVoiceBill}>
               🎙 Start Voice Billing
             </button>
 
-            <button onClick={openCreateBill}>
+            <button onClick={openVoiceBill}>
               ＋ Create Manual Bill
             </button>
 
