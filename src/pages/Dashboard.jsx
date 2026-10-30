@@ -15,9 +15,12 @@ function Dashboard() {
   };
 
   if (!shop || !localStorage.getItem("voicebillToken")) {
-    navigate("/", { replace: true });
     return null;
   }
+
+  const openCreateBill = () => {
+    navigate("/create-bill");
+  };
 
   return (
     <div className="dashboard-page">
@@ -27,14 +30,25 @@ function Dashboard() {
         </div>
 
         <nav className="dashboard-nav">
-          <button className="nav-item active">▦ Dashboard</button>
-          <button className="nav-item" onClick={() => alert("Billing feature coming soon!")}>
+          <button className="nav-item active">
+            ▦ Dashboard
+          </button>
+
+          <button className="nav-item" onClick={openCreateBill}>
             ＋ Create New Bill
           </button>
-          <button className="nav-item" onClick={() => alert("Billing history coming soon!")}>
+
+          <button
+            className="nav-item"
+            onClick={() => alert("Billing history coming soon!")}
+          >
             ◷ Billing History
           </button>
-          <button className="nav-item" onClick={() => alert("Settings coming soon!")}>
+
+          <button
+            className="nav-item"
+            onClick={() => alert("Settings coming soon!")}
+          >
             ⚙ Settings
           </button>
         </nav>
@@ -55,6 +69,7 @@ function Dashboard() {
             <div className="profile-avatar">
               {shop.ownerName?.charAt(0).toUpperCase() || "S"}
             </div>
+
             <div>
               <strong>{shop.ownerName}</strong>
               <p>{shop.shopName}</p>
@@ -68,7 +83,7 @@ function Dashboard() {
             <p>Ready to manage your shop with VoiceBill AI?</p>
           </div>
 
-          <button onClick={() => alert("Bill creation will be added in the next step.")}>
+          <button onClick={openCreateBill}>
             + Create New Bill
           </button>
         </section>
@@ -120,15 +135,17 @@ function Dashboard() {
           <div className="quick-actions">
             <h2>Quick Actions</h2>
 
-            <button onClick={() => alert("Voice billing will be added next.")}>
+            <button onClick={openCreateBill}>
               🎙 Start Voice Billing
             </button>
 
-            <button onClick={() => alert("Manual billing will be added next.")}>
+            <button onClick={openCreateBill}>
               ＋ Create Manual Bill
             </button>
 
-            <button onClick={() => alert("Billing history will be added next.")}>
+            <button
+              onClick={() => alert("Billing history coming soon!")}
+            >
               ◷ View Billing History
             </button>
           </div>
