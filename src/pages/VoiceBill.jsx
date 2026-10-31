@@ -3,568 +3,622 @@ import { useNavigate } from "react-router-dom";
 import "./VoiceBill.css";
 
 function VoiceBill() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const [activeSection, setActiveSection] = useState("voice");
-const [customerName, setCustomerName] = useState("");
-const [customerMobile, setCustomerMobile] = useState("");
-const [discount, setDiscount] = useState("0");
-const [command, setCommand] = useState("");
-const [listening, setListening] = useState(false);
-const [message, setMessage] = useState("");
+  const [activeSection, setActiveSection] = useState("voice");
+  const [customerName, setCustomerName] = useState("");
+  const [customerMobile, setCustomerMobile] = useState("");
+  const [discount, setDiscount] = useState("0");
+  const [command, setCommand] = useState("");
+  const [listening, setListening] = useState(false);
+  const [message, setMessage] = useState("");
 
-const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]);
+  const [messages, setMessages] = useState([]);
 
-const [messages, setMessages] = useState([
-{
-role: "assistant",
-text: "Hello! Welcome to VoiceBill AI. You can add products, change quantities, apply discounts or ask me about your bill. How can I help you?",
-},
-]);
-
-const validItems = items.filter(
-(item) =>
-item.name.trim() &&
-Number(item.quantity) > 0 &&
-Number(item.price) >= 0
-);
-
-const subtotal = validItems.reduce(
-(total, item) =>
-total + Number(item.quantity) * Number(item.price),
-0
-);
-
-const discountAmount =
-(subtotal * Math.max(0, Math.min(100, Number(discount) || 0))) /
-100;
-
-const grandTotal = subtotal - discountAmount;
-
-const updateItem = (id, field, value) => {
-setItems((previous) =>
-previous.map((item) =>
-item.id === id ? { ...item, [field]: value } : item
-)
-);
-};
-
-const addManualItem = () => {
-setItems((previous) => [
-...previous,
-{
-id: Date.now() + Math.random(),
-name: "",
-quantity: 1,
-price: 0,
-},
-]);
-};
-
-const removeItem = (id) => {
-setItems((previous) => previous.filter((item) => item.id !== id));
-};
-
-const addProduct = (name, quantity, price) => {
-const product = {
-id: Date.now() + Math.random(),
-name,
-quantity,
-price,
-};
-
-setItems((previous) => [...previous, product]);
-
-return `${name} added successfully! Quantity: ${quantity}. Amount: ₹${(
-  quantity * price
-).toFixed(2)}.`;
-
-};
-
-const processCommand = (rawCommand) => {
-const text = rawCommand.trim();
-const lower = text.toLowerCase();
-
-if (!text) return;
-
-let response = "";
-
-// Add product
-const addPattern =
-  /(?:add\s+)?(\d+(?:\.\d+)?)\s*(kg|kgs|kilograms?|litres?|liters?|l|grams?|g|pieces?|pcs|packets?|packs?)?\s+(.+?)\s+at\s+₹?\s*(\d+(?:\.\d+)?)(?:\s*(?:rupees?|rs\.?|₹))?(?:\s+per\s+(?:kg|kgs|kilogram|litre|liter|l|piece|pc))?/i;
-
-const addMatch = text.match(addPattern);
-
-if (addMatch) {
-  const quantity = Number(addMatch[1]);
-  const name = addMatch[3].trim();
-  const price = Number(addMatch[4]);
-
-  if (name && quantity > 0 && price >= 0) {
-    response = addProduct(name, quantity, price);
-  }
-}
-
-// Change product quantity
-if (!response) {
-  const changeQuantityPattern =
-    /(?:change|update|set)\s+(.+?)\s+quantity\s+to\s+(\d+(?:\.\d+)?)/i;
-
-  const match = text.match(changeQuantityPattern);
-
-  if (match) {
-    const name = match[1].trim();
-    const quantity = Number(match[2]);
-
-    const product = items.find(
-      (item) => item.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (product && quantity > 0) {
-      updateItem(product.id, "quantity", quantity);
-      response = `${name} quantity updated to ${quantity}.`;
-    } else {
-      response = `I could not find ${name} in your current bill.`;
-    }
-  }
-}
-
-// Change product price
-if (!response) {
-  const changePricePattern =
-    /(?:change|update|set)\s+(.+?)\s+price\s+to\s+₹?\s*(\d+(?:\.\d+)?)/i;
-
-  const match = text.match(changePricePattern);
-
-  if (match) {
-    const name = match[1].trim();
-    const price = Number(match[2]);
-
-    const product = items.find(
-      (item) => item.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (product) {
-      updateItem(product.id, "price", price);
-      response = `${name} price updated to ₹${price}.`;
-    } else {
-      response = `I could not find ${name} in your bill.`;
-    }
-  }
-}
-
-// Remove product
-if (!response) {
-  const removeMatch = text.match(
-    /(?:remove|delete)\s+(.+)/i
+  const validItems = items.filter(
+    (item) =>
+      item.name.trim() &&
+      Number(item.quantity) > 0 &&
+      Number(item.price) >= 0
   );
 
-  if (removeMatch) {
-    const name = removeMatch[1].trim();
-
-    const product = items.find(
-      (item) => item.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (product) {
-      removeItem(product.id);
-      response = `${name} removed from your bill.`;
-    } else {
-      response = `${name} was not found in your bill.`;
-    }
-  }
-}
-
-// Discount
-if (!response) {
-  const discountMatch = text.match(
-    /(?:add|apply|give)\s+(\d+(?:\.\d+)?)\s*%?\s*discount/i
+  const subtotal = validItems.reduce(
+    (total, item) =>
+      total + Number(item.quantity) * Number(item.price),
+    0
   );
 
-  if (discountMatch) {
-    const value = Number(discountMatch[1]);
+  const discountAmount =
+    (subtotal *
+      Math.max(0, Math.min(100, Number(discount) || 0))) /
+    100;
 
-    if (value >= 0 && value <= 100) {
-      setDiscount(String(value));
-      response = `${value}% discount applied successfully.`;
-    } else {
-      response = "Discount must be between 0 and 100 percent.";
+  const grandTotal = subtotal - discountAmount;
+
+  const updateItem = (id, field, value) => {
+    setItems((previous) =>
+      previous.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
+  const addManualItem = () => {
+    setItems((previous) => [
+      ...previous,
+      {
+        id: Date.now() + Math.random(),
+        name: "",
+        quantity: 1,
+        price: 0,
+      },
+    ]);
+  };
+
+  const removeItem = (id) => {
+    setItems((previous) =>
+      previous.filter((item) => item.id !== id)
+    );
+  };
+
+  const addProduct = (name, quantity, price) => {
+    const product = {
+      id: Date.now() + Math.random(),
+      name,
+      quantity,
+      price,
+    };
+
+    setItems((previous) => [...previous, product]);
+
+    return `Product: ${name}
+Quantity: ${quantity}
+Price: ₹${Number(price).toFixed(2)}
+Amount: ₹${(quantity * price).toFixed(2)}`;
+  };
+
+  const processCommand = (rawCommand) => {
+    const text = rawCommand.trim();
+    const lower = text.toLowerCase();
+
+    if (!text) return;
+
+    let response = "";
+
+    // Add product
+    const addPattern =
+      /(?:add\s+)?(\d+(?:\.\d+)?)\s*(kg|kgs|kilograms?|litres?|liters?|l|grams?|g|pieces?|pcs|packets?|packs?)?\s+(.+?)\s+at\s+₹?\s*(\d+(?:\.\d+)?)(?:\s*(?:rupees?|rs\.?|₹))?(?:\s+per\s+(?:kg|kgs|kilogram|litre|liter|l|piece|pc))?/i;
+
+    const addMatch = text.match(addPattern);
+
+    if (addMatch) {
+      const quantity = Number(addMatch[1]);
+      const name = addMatch[3].trim();
+      const price = Number(addMatch[4]);
+
+      if (name && quantity > 0 && price >= 0) {
+        response = addProduct(name, quantity, price);
+      }
     }
-  }
-}
 
-// Final amount
-if (!response && /(final amount|total amount|bill total|grand total)/i.test(lower)) {
-  response = `Your current subtotal is ₹${subtotal.toFixed(
-    2
-  )}. Discount: ₹${discountAmount.toFixed(
-    2
-  )}. Final amount: ₹${grandTotal.toFixed(2)}.`;
-}
+    // Change product quantity
+    if (!response) {
+      const changeQuantityPattern =
+        /(?:change|update|set)\s+(.+?)\s+quantity\s+to\s+(\d+(?:\.\d+)?)/i;
 
-if (!response) {
-  response =
-    'I could not understand that command. Try "Add 2 kg rice at 60 rupees per kg".';
-}
+      const match = text.match(changeQuantityPattern);
 
-setMessages((previous) => [
-  ...previous,
-  { role: "user", text },
-  { role: "assistant", text: response },
-]);
+      if (match) {
+        const name = match[1].trim();
+        const quantity = Number(match[2]);
 
-setMessage(response);
+        const product = items.find(
+          (item) =>
+            item.name.toLowerCase() === name.toLowerCase()
+        );
 
-};
+        if (product && quantity > 0) {
+          updateItem(product.id, "quantity", quantity);
 
-const sendCommand = () => {
-if (!command.trim()) return;
+          response = `Product: ${name}
+Updated Quantity: ${quantity}`;
+        } else {
+          response = `Product ${name} was not found in your bill.`;
+        }
+      }
+    }
 
-processCommand(command);
-setCommand("");
+    // Change product price
+    if (!response) {
+      const changePricePattern =
+        /(?:change|update|set)\s+(.+?)\s+price\s+to\s+₹?\s*(\d+(?:\.\d+)?)/i;
 
-};
+      const match = text.match(changePricePattern);
 
-const startVoiceBilling = () => {
-const SpeechRecognition =
-window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (match) {
+        const name = match[1].trim();
+        const price = Number(match[2]);
 
-if (!SpeechRecognition) {
-  setMessage("Please use Google Chrome or Microsoft Edge for voice billing.");
-  return;
-}
+        const product = items.find(
+          (item) =>
+            item.name.toLowerCase() === name.toLowerCase()
+        );
 
-const recognition = new SpeechRecognition();
+        if (product) {
+          updateItem(product.id, "price", price);
 
-recognition.lang = "en-IN";
-recognition.continuous = false;
-recognition.interimResults = false;
+          response = `Product: ${name}
+Updated Price: ₹${price.toFixed(2)}`;
+        } else {
+          response = `Product ${name} was not found in your bill.`;
+        }
+      }
+    }
 
-recognition.onstart = () => {
-  setListening(true);
-  setMessage("Listening... Speak your command.");
-};
+    // Remove product
+    if (!response) {
+      const removeMatch = text.match(
+        /(?:remove|delete)\s+(.+)/i
+      );
 
-recognition.onresult = (event) => {
-  const spokenText = event.results[0][0].transcript;
-  processCommand(spokenText);
-};
+      if (removeMatch) {
+        const name = removeMatch[1].trim();
 
-recognition.onerror = (event) => {
-  setMessage(`Voice recognition error: ${event.error}`);
-  setListening(false);
-};
+        const product = items.find(
+          (item) =>
+            item.name.toLowerCase() === name.toLowerCase()
+        );
 
-recognition.onend = () => {
-  setListening(false);
-};
+        if (product) {
+          removeItem(product.id);
+          response = `Product Removed: ${name}`;
+        } else {
+          response = `Product ${name} was not found in your bill.`;
+        }
+      }
+    }
 
-try {
-  recognition.start();
-} catch {
-  setListening(false);
-  setMessage("Could not start microphone. Please try again.");
-}
+    // Discount
+    if (!response) {
+      const discountMatch = text.match(
+        /(?:add|apply|give)\s+(\d+(?:\.\d+)?)\s*%?\s*discount/i
+      );
 
-};
+      if (discountMatch) {
+        const value = Number(discountMatch[1]);
 
-const generateBill = () => {
-if (validItems.length === 0) {
-setMessage("Please add at least one valid product.");
-return;
-}
+        if (value >= 0 && value <= 100) {
+          setDiscount(String(value));
+          response = `Discount Applied: ${value}%`;
+        } else {
+          response = "Discount must be between 0 and 100 percent.";
+        }
+      }
+    }
 
-alert(
-  `Bill generated successfully!\n\nProducts: ${validItems.length}\nSubtotal: ₹${subtotal.toFixed(
-    2
-  )}\nDiscount: ₹${discountAmount.toFixed(
-    2
-  )}\nGrand Total: ₹${grandTotal.toFixed(2)}`
-);
+    // Final amount
+    if (
+      !response &&
+      /(final amount|total amount|bill total|grand total)/i.test(lower)
+    ) {
+      response = `Subtotal: ₹${subtotal.toFixed(2)}
+Discount: ₹${discountAmount.toFixed(2)}
+Grand Total: ₹${grandTotal.toFixed(2)}`;
+    }
 
-};
+    // Unrecognized command
+    if (!response) {
+      response =
+        'Command not recognized. Try "Add 2 kg rice at 60 rupees per kg".';
+    }
 
-return ( <div className="voicebill-workspace"> <aside className="vb-sidebar"> <div className="vb-brand">
-VoiceBill <span>AI</span> </div>
+    // Only show billing details, not user/AI conversation labels
+    setMessages((previous) => [
+      ...previous,
+      {
+        id: Date.now() + Math.random(),
+        text: response,
+      },
+    ]);
 
-```
-    <p className="vb-sidebar-label">BILLING</p>
+    setMessage("");
+  };
 
-    <button
-      className={`vb-nav-item ${activeSection === "voice" ? "active" : ""}`}
-      onClick={() => setActiveSection("voice")}
-    >
-      🎙️ VoiceBill AI
-    </button>
+  const sendCommand = () => {
+    if (!command.trim()) return;
 
-    <button
-      className={`vb-nav-item ${activeSection === "manual" ? "active" : ""}`}
-      onClick={() => setActiveSection("manual")}
-    >
-      ✍️ Manual Billing
-    </button>
+    processCommand(command);
+    setCommand("");
+  };
 
-    <div className="vb-sidebar-divider" />
+  const startVoiceBilling = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
 
-    <p className="vb-sidebar-label">HISTORY</p>
+    if (!SpeechRecognition) {
+      setMessage(
+        "Please use Google Chrome or Microsoft Edge for voice billing."
+      );
+      return;
+    }
 
-    <div className="vb-history-empty">
-      <span>◷</span>
-      <p>No saved bills yet</p>
-      <small>Generated bills will appear here.</small>
-    </div>
+    const recognition = new SpeechRecognition();
 
-    <button
-      className="vb-back-button"
-      onClick={() => navigate("/dashboard")}
-    >
-      ← Back to Dashboard
-    </button>
-  </aside>
+    recognition.lang = "en-IN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-  <main className="vb-main">
-    {activeSection === "voice" ? (
-      <>
-        <header className="vb-chat-header">
-          <div>
-            <h1>VoiceBill AI</h1>
-            <p>Your intelligent billing assistant</p>
-          </div>
-          <span className="vb-status">● Ready</span>
-        </header>
+    recognition.onstart = () => {
+      setListening(true);
+      setMessage("Listening... Speak your command.");
+    };
 
-        <section className="vb-chat-messages">
-          {messages.map((item, index) => (
-            <div
-              key={index}
-              className={`vb-message ${item.role}`}
-            >
-              <div className="vb-message-avatar">
-                {item.role === "assistant" ? "AI" : "You"}
-              </div>
-              <div className="vb-message-content">
-                <strong>
-                  {item.role === "assistant" ? "VoiceBill AI" : "You"}
-                </strong>
-                <p>{item.text}</p>
-              </div>
-            </div>
-          ))}
-        </section>
+    recognition.onresult = (event) => {
+      const spokenText = event.results[0][0].transcript;
+      processCommand(spokenText);
+    };
 
-        <div className="vb-chat-bottom">
-          {message && <p className="vb-chat-notice">{message}</p>}
+    recognition.onerror = (event) => {
+      setMessage(`Voice recognition error: ${event.error}`);
+      setListening(false);
+    };
 
-          <div className="vb-chat-input">
-            <input
-              type="text"
-              placeholder="Message VoiceBill AI..."
-              value={command}
-              onChange={(e) => setCommand(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") sendCommand();
-              }}
-            />
+    recognition.onend = () => {
+      setListening(false);
+    };
 
-            <button
-              className={`vb-mic-button ${listening ? "listening" : ""}`}
-              onClick={startVoiceBilling}
-              disabled={listening}
-              title="Speak command"
-            >
-              {listening ? "●" : "🎙️"}
-            </button>
+    try {
+      recognition.start();
+    } catch {
+      setListening(false);
+      setMessage("Could not start microphone. Please try again.");
+    }
+  };
 
-            <button
-              className="vb-send-button"
-              onClick={sendCommand}
-              disabled={!command.trim()}
-              title="Send message"
-            >
-              ➤
-            </button>
-          </div>
+  const generateBill = () => {
+    if (validItems.length === 0) {
+      setMessage("Please add at least one valid product.");
+      return;
+    }
 
-          <p className="vb-chat-hint">
-            Try: Add 2 kg rice at 60 rupees per kg
-          </p>
+    alert(
+      `Bill generated successfully!\n\nProducts: ${validItems.length}\nSubtotal: ₹${subtotal.toFixed(
+        2
+      )}\nDiscount: ₹${discountAmount.toFixed(
+        2
+      )}\nGrand Total: ₹${grandTotal.toFixed(2)}`
+    );
+  };
+
+  return (
+    <div className="voicebill-workspace">
+      {/* Sidebar */}
+      <aside className="vb-sidebar">
+        <div className="vb-brand">
+          VoiceBill <span>AI</span>
         </div>
-      </>
-    ) : (
-      <>
-        <header className="vb-chat-header">
-          <div>
-            <h1>Manual Billing</h1>
-            <p>Add or edit products directly in your bill.</p>
-          </div>
-        </header>
 
-        <div className="vb-manual-area">
-          <div className="vb-manual-heading">
-            <h2>Product Entry</h2>
-            <button onClick={addManualItem}>+ Add Product</button>
-          </div>
+        <p className="vb-sidebar-label">BILLING</p>
 
-          {items.map((item) => (
-            <div className="vb-manual-row" key={item.id}>
-              <input
-                placeholder="Product name"
-                value={item.name}
-                onChange={(e) =>
-                  updateItem(item.id, "name", e.target.value)
-                }
-              />
-              <input
-                type="number"
-                min="0.01"
-                step="any"
-                placeholder="Quantity"
-                value={item.quantity}
-                onChange={(e) =>
-                  updateItem(item.id, "quantity", e.target.value)
-                }
-              />
-              <input
-                type="number"
-                min="0"
-                step="any"
-                placeholder="Price"
-                value={item.price}
-                onChange={(e) =>
-                  updateItem(item.id, "price", e.target.value)
-                }
-              />
-              <button onClick={() => removeItem(item.id)}>×</button>
+        <button
+          className={`vb-nav-item ${
+            activeSection === "voice" ? "active" : ""
+          }`}
+          onClick={() => setActiveSection("voice")}
+        >
+          🎙️ VoiceBill AI
+        </button>
+
+        <button
+          className={`vb-nav-item ${
+            activeSection === "manual" ? "active" : ""
+          }`}
+          onClick={() => setActiveSection("manual")}
+        >
+          ✍️ Manual Billing
+        </button>
+
+        <div className="vb-sidebar-divider" />
+
+        <p className="vb-sidebar-label">HISTORY</p>
+
+        <div className="vb-history-empty">
+          <span>◷</span>
+          <p>No saved bills yet</p>
+          <small>Generated bills will appear here.</small>
+        </div>
+
+        <button
+          className="vb-back-button"
+          onClick={() => navigate("/dashboard")}
+        >
+          ← Back to Dashboard
+        </button>
+      </aside>
+
+      {/* Main Section */}
+      <main className="vb-main">
+        {activeSection === "voice" ? (
+          <>
+            <header className="vb-chat-header">
+              <div>
+                <h1>VoiceBill AI</h1>
+                <p>Your intelligent billing assistant</p>
+              </div>
+
+              <span className="vb-status">● Ready</span>
+            </header>
+
+            {/* Product Details Only */}
+            <section className="vb-chat-messages">
+              {messages.length === 0 ? (
+                <div className="vb-empty-products">
+                  Product details will appear here.
+                </div>
+              ) : (
+                messages.map((item) => (
+                  <div
+                    key={item.id}
+                    className="vb-message assistant"
+                  >
+                    <div className="vb-message-content">
+                      <p style={{ whiteSpace: "pre-line" }}>
+                        {item.text}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </section>
+
+            <div className="vb-chat-bottom">
+              {message && (
+                <p className="vb-chat-notice">{message}</p>
+              )}
+
+              <div className="vb-chat-input">
+                <input
+                  type="text"
+                  placeholder="Enter product details or billing command..."
+                  value={command}
+                  onChange={(e) => setCommand(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") sendCommand();
+                  }}
+                />
+
+                <button
+                  className={`vb-mic-button ${
+                    listening ? "listening" : ""
+                  }`}
+                  onClick={startVoiceBilling}
+                  disabled={listening}
+                  title="Speak command"
+                >
+                  {listening ? "●" : "🎙️"}
+                </button>
+
+                <button
+                  className="vb-send-button"
+                  onClick={sendCommand}
+                  disabled={!command.trim()}
+                  title="Send command"
+                >
+                  ➤
+                </button>
+              </div>
+
+              <p className="vb-chat-hint">
+                Try: Add 2 kg rice at 60 rupees per kg
+              </p>
             </div>
-          ))}
+          </>
+        ) : (
+          <>
+            <header className="vb-chat-header">
+              <div>
+                <h1>Manual Billing</h1>
+                <p>Add or edit products directly in your bill.</p>
+              </div>
+            </header>
 
-          {items.length === 0 && (
+            <div className="vb-manual-area">
+              <div className="vb-manual-heading">
+                <h2>Product Entry</h2>
+
+                <button onClick={addManualItem}>
+                  + Add Product
+                </button>
+              </div>
+
+              {items.map((item) => (
+                <div className="vb-manual-row" key={item.id}>
+                  <input
+                    placeholder="Product name"
+                    value={item.name}
+                    onChange={(e) =>
+                      updateItem(item.id, "name", e.target.value)
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="any"
+                    placeholder="Quantity"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      updateItem(item.id, "quantity", e.target.value)
+                    }
+                  />
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="Price"
+                    value={item.price}
+                    onChange={(e) =>
+                      updateItem(item.id, "price", e.target.value)
+                    }
+                  />
+
+                  <button onClick={() => removeItem(item.id)}>
+                    ×
+                  </button>
+                </div>
+              ))}
+
+              {items.length === 0 && (
+                <p className="vb-empty-products">
+                  No products added. Click Add Product to begin.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+      </main>
+
+      {/* Live Bill */}
+      <aside className="vb-bill-panel">
+        <div className="vb-bill-heading">
+          <div>
+            <h2>Live Bill</h2>
+            <p>Current invoice</p>
+          </div>
+
+          <span>✦</span>
+        </div>
+
+        <div className="vb-customer-fields">
+          <label>Customer Name</label>
+
+          <input
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            placeholder="Enter customer name"
+          />
+
+          <label>Mobile Number</label>
+
+          <input
+            value={customerMobile}
+            onChange={(e) => setCustomerMobile(e.target.value)}
+            placeholder="Enter mobile number"
+            type="tel"
+          />
+        </div>
+
+        <div className="vb-live-products">
+          <div className="vb-products-heading">
+            <h3>Products ({validItems.length})</h3>
+
+            <button onClick={addManualItem}>+ Add</button>
+          </div>
+
+          {validItems.length === 0 ? (
             <p className="vb-empty-products">
-              No products added. Click Add Product to begin.
+              Your products will appear here.
             </p>
+          ) : (
+            validItems.map((item) => (
+              <div className="vb-live-product" key={item.id}>
+                <div className="vb-live-product-top">
+                  <strong>{item.name}</strong>
+
+                  <button onClick={() => removeItem(item.id)}>
+                    ×
+                  </button>
+                </div>
+
+                <div className="vb-live-product-fields">
+                  <label>
+                    Qty
+
+                    <input
+                      type="number"
+                      min="0.01"
+                      step="any"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        updateItem(
+                          item.id,
+                          "quantity",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Price
+
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={item.price}
+                      onChange={(e) =>
+                        updateItem(
+                          item.id,
+                          "price",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </label>
+                </div>
+
+                <div className="vb-live-amount">
+                  Amount: ₹
+                  {(
+                    Number(item.quantity || 0) *
+                    Number(item.price || 0)
+                  ).toFixed(2)}
+                </div>
+              </div>
+            ))
           )}
         </div>
-      </>
-    )}
-  </main>
 
-  <aside className="vb-bill-panel">
-    <div className="vb-bill-heading">
-      <div>
-        <h2>Live Bill</h2>
-        <p>Current invoice</p>
-      </div>
-      <span>✦</span>
+        <div className="vb-discount">
+          <label>Discount (%)</label>
+
+          <input
+            type="number"
+            min="0"
+            max="100"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+          />
+        </div>
+
+        <div className="vb-total-row">
+          <span>Subtotal</span>
+          <strong>₹{subtotal.toFixed(2)}</strong>
+        </div>
+
+        <div className="vb-total-row">
+          <span>Discount</span>
+          <strong>- ₹{discountAmount.toFixed(2)}</strong>
+        </div>
+
+        <div className="vb-grand-total">
+          <span>Grand Total</span>
+          <strong>₹{grandTotal.toFixed(2)}</strong>
+        </div>
+
+        <button
+          className="vb-generate-button"
+          onClick={generateBill}
+        >
+          Generate Bill →
+        </button>
+      </aside>
     </div>
-
-    <div className="vb-customer-fields">
-      <label>Customer Name</label>
-      <input
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-        placeholder="Enter customer name"
-      />
-
-      <label>Mobile Number</label>
-      <input
-        value={customerMobile}
-        onChange={(e) => setCustomerMobile(e.target.value)}
-        placeholder="Enter mobile number"
-        type="tel"
-      />
-    </div>
-
-    <div className="vb-live-products">
-      <div className="vb-products-heading">
-        <h3>Products ({validItems.length})</h3>
-        <button onClick={addManualItem}>+ Add</button>
-      </div>
-
-      {validItems.length === 0 ? (
-        <p className="vb-empty-products">
-          Your products will appear here.
-        </p>
-      ) : (
-        validItems.map((item) => (
-          <div className="vb-live-product" key={item.id}>
-            <div className="vb-live-product-top">
-              <strong>{item.name}</strong>
-              <button onClick={() => removeItem(item.id)}>×</button>
-            </div>
-
-            <div className="vb-live-product-fields">
-              <label>
-                Qty
-                <input
-                  type="number"
-                  min="0.01"
-                  step="any"
-                  value={item.quantity}
-                  onChange={(e) =>
-                    updateItem(item.id, "quantity", e.target.value)
-                  }
-                />
-              </label>
-
-              <label>
-                Price
-                <input
-                  type="number"
-                  min="0"
-                  step="any"
-                  value={item.price}
-                  onChange={(e) =>
-                    updateItem(item.id, "price", e.target.value)
-                  }
-                />
-              </label>
-            </div>
-
-            <div className="vb-live-amount">
-              Amount: ₹
-              {(
-                Number(item.quantity || 0) *
-                Number(item.price || 0)
-              ).toFixed(2)}
-            </div>
-          </div>
-        ))
-      )}
-    </div>
-
-    <div className="vb-discount">
-      <label>Discount (%)</label>
-      <input
-        type="number"
-        min="0"
-        max="100"
-        value={discount}
-        onChange={(e) => setDiscount(e.target.value)}
-      />
-    </div>
-
-    <div className="vb-total-row">
-      <span>Subtotal</span>
-      <strong>₹{subtotal.toFixed(2)}</strong>
-    </div>
-
-    <div className="vb-total-row">
-      <span>Discount</span>
-      <strong>- ₹{discountAmount.toFixed(2)}</strong>
-    </div>
-
-    <div className="vb-grand-total">
-      <span>Grand Total</span>
-      <strong>₹{grandTotal.toFixed(2)}</strong>
-    </div>
-
-    <button className="vb-generate-button" onClick={generateBill}>
-      Generate Bill →
-    </button>
-  </aside>
-</div>
-
-);
+  );
 }
 
 export default VoiceBill;
