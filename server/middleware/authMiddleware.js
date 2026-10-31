@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
+const Shop = require("../models/Shop");
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
 try {
 const authHeader = req.headers.authorization;
 
+```
 if (!authHeader || !authHeader.startsWith("Bearer ")) {
   return res.status(401).json({
     success: false,
@@ -15,9 +17,19 @@ const token = authHeader.split(" ")[1];
 
 const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-req.shop = decoded;
+const shop = await Shop.findOne({ shopId: decoded.shopId });
+
+if (!shop) {
+  return res.status(401).json({
+    success: false,
+    message: "Shop not found. Please login again.",
+  });
+}
+
+req.shop = shop;
 
 next();
+```
 
 } catch (error) {
 return res.status(401).json({
