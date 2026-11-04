@@ -86,8 +86,8 @@ function VoiceBill() {
 
     return `Product: ${name}
 Quantity: ${quantity}
-Price: ₹${Number(price).toFixed(2)}
-Amount: ₹${(quantity * price).toFixed(2)}`;
+Price: Rs. ${Number(price).toFixed(2)}
+Amount: Rs. ${(quantity * price).toFixed(2)}`;
   };
 
   // Process voice or text commands
@@ -162,7 +162,7 @@ Updated Quantity: ${quantity}`;
           updateItem(product.id, "price", price);
 
           response = `Product: ${name}
-Updated Price: ₹${price.toFixed(2)}`;
+Updated Price: Rs. ${price.toFixed(2)}`;
         } else {
           response = `Product ${name} was not found in your bill.`;
         }
@@ -215,9 +215,9 @@ Updated Price: ₹${price.toFixed(2)}`;
       !response &&
       /(final amount|total amount|bill total|grand total)/i.test(lower)
     ) {
-      response = `Subtotal: ₹${subtotal.toFixed(2)}
-Discount: ₹${discountAmount.toFixed(2)}
-Grand Total: ₹${grandTotal.toFixed(2)}`;
+      response = `Subtotal: Rs. ${subtotal.toFixed(2)}
+Discount: Rs. ${discountAmount.toFixed(2)}
+Grand Total: Rs. ${grandTotal.toFixed(2)}`;
     }
 
     if (!response) {
@@ -290,8 +290,29 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
     }
   };
 
+  // Convert dummy QR image into data URL for PDF
+  const getDummyQRData = async () => {
+    const response = await fetch("/dummy-qr.png");
+
+    if (!response.ok) {
+      throw new Error("Dummy QR image could not be loaded.");
+    }
+
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () =>
+        reject(new Error("Could not read dummy QR image."));
+
+      reader.readAsDataURL(blob);
+    });
+  };
+
   // Generate PDF Invoice
-  const downloadBillPDF = (bill) => {
+  const downloadBillPDF = async (bill) => {
     try {
       const doc = new jsPDF();
 
@@ -377,15 +398,17 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
       y += 12;
 
       bill.items.forEach((item) => {
-        if (y > 265) {
-          doc.addPage();
-          y = 20;
-        }
-
         const productName = doc.splitTextToSize(
           String(item.name),
           65
         );
+
+        const rowHeight = Math.max(10, productName.length * 5);
+
+        if (y + rowHeight > 260) {
+          doc.addPage();
+          y = 20;
+        }
 
         doc.text(productName, 15, y);
         doc.text(String(item.quantity), 95, y);
@@ -400,11 +423,11 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
           y
         );
 
-        y += Math.max(10, productName.length * 5);
+        y += rowHeight;
       });
 
       // Totals
-      if (y > 245) {
+      if (y > 235) {
         doc.addPage();
         y = 25;
       }
@@ -449,14 +472,50 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
         { align: "right" }
       );
 
-      // Footer
-      y += 25;
+      // Demo QR section
+      y += 15;
 
-      if (y > 280) {
+      if (y > 220) {
         doc.addPage();
-        y = 30;
+        y = 25;
       }
 
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+
+      doc.text("Demo Payment QR", pageWidth / 2, y, {
+        align: "center",
+      });
+
+      y += 5;
+
+      const qrData = await getDummyQRData();
+
+      doc.addImage(
+        qrData,
+        "PNG",
+        pageWidth / 2 - 20,
+        y,
+        40,
+        40
+      );
+
+      y += 46;
+
+      doc.setFontSize(10);
+      doc.setTextColor(200, 0, 0);
+
+      doc.text(
+        "DEMO QR - NOT FOR PAYMENT",
+        pageWidth / 2,
+        y,
+        { align: "center" }
+      );
+
+      // Footer
+      y += 15;
+
+      doc.setTextColor(0, 0, 0);
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
 
@@ -474,7 +533,9 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
 
     } catch (error) {
       console.error("PDF generation error:", error);
-      alert("Could not generate PDF invoice. Please try again.");
+      alert(
+        "Could not generate PDF invoice. Please check that public/dummy-qr.png exists."
+      );
     }
   };
 
@@ -574,10 +635,10 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
       setMessage("Bill saved successfully!");
 
       // Download PDF using saved bill data
-      downloadBillPDF(data.bill);
+      await downloadBillPDF(data.bill);
 
       alert(
-        `Bill saved successfully!\n\nProducts: ${validItems.length}\nSubtotal: ₹${subtotal.toFixed(2)}\nDiscount: ₹${discountAmount.toFixed(2)}\nGrand Total: ₹${grandTotal.toFixed(2)}`
+        `Bill saved successfully!\n\nProducts: ${validItems.length}\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDiscount: Rs. ${discountAmount.toFixed(2)}\nGrand Total: Rs. ${grandTotal.toFixed(2)}`
       );
 
       // Clear current bill
@@ -768,25 +829,25 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
 
                       {bill.items.map((item, index) => (
                         <p key={index}>
-                          {item.name} — {item.quantity} × ₹
+                          {item.name} — {item.quantity} × Rs.
                           {Number(item.price).toFixed(2)}
-                          {" = "}₹
+                          {" = "}Rs.
                           {Number(item.amount).toFixed(2)}
                         </p>
                       ))}
 
                       <p>
-                        Subtotal: ₹
+                        Subtotal: Rs.
                         {Number(bill.subtotal).toFixed(2)}
                       </p>
 
                       <p>
-                        Discount: {bill.discount}% (₹
+                        Discount: {bill.discount}% (Rs.
                         {Number(bill.discountAmount).toFixed(2)})
                       </p>
 
                       <strong>
-                        Grand Total: ₹
+                        Grand Total: Rs.
                         {Number(bill.grandTotal).toFixed(2)}
                       </strong>
 
@@ -1106,7 +1167,7 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
                 </div>
 
                 <div className="vb-live-amount">
-                  Amount: ₹
+                  Amount: Rs.
                   {(
                     Number(item.quantity || 0) *
                     Number(item.price || 0)
@@ -1137,17 +1198,31 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
 
         <div className="vb-total-row">
           <span>Subtotal</span>
-          <strong>₹{subtotal.toFixed(2)}</strong>
+          <strong>Rs. {subtotal.toFixed(2)}</strong>
         </div>
 
         <div className="vb-total-row">
           <span>Discount</span>
-          <strong>- ₹{discountAmount.toFixed(2)}</strong>
+          <strong>- Rs. {discountAmount.toFixed(2)}</strong>
         </div>
 
         <div className="vb-grand-total">
           <span>Grand Total</span>
-          <strong>₹{grandTotal.toFixed(2)}</strong>
+          <strong>Rs. {grandTotal.toFixed(2)}</strong>
+        </div>
+
+        {/* Dummy QR Code */}
+        <div className="vb-demo-qr">
+
+          <h3>Scan to Pay</h3>
+
+          <img
+            src="/dummy-qr.png"
+            alt="Demo QR code - not valid for payment"
+          />
+
+          <p>DEMO QR - NOT FOR PAYMENT</p>
+
         </div>
 
         <button
