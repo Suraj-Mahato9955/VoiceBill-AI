@@ -540,3 +540,24 @@ padding: 9px 5px;
 font-size: 12px;
 }
 }
+.qr-payment {
+  text-align: center;
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px dashed #999;
+  border-radius: 10px;
+}
+
+.qr-payment img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  display: block;
+  margin: 10px auto;
+}
+
+.qr-payment p {
+  color: #d32f2f;
+  font-size: 12px;
+  font-weight: bold;
+}
