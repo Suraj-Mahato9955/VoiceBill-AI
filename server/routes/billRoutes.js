@@ -92,7 +92,6 @@ return res.status(400).json({
 }
 });
 
-// Get bills of logged-in shop
 router.get("/", authMiddleware, async (req, res) => {
 try {
 const bills = await Bill.find({
