@@ -45,7 +45,6 @@ function VoiceBill() {
 
   const grandTotal = subtotal - discountAmount;
 
-  // Update product
   const updateItem = (id, field, value) => {
     setItems((previous) =>
       previous.map((item) =>
