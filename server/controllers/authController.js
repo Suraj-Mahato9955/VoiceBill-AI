@@ -78,7 +78,6 @@ while (shopIdExists) {
   shopIdExists = await Shop.exists({ shopId });
 }
 
-// Save shop in MongoDB
 const shop = await Shop.create({
   ownerName: ownerName.trim(),
   shopName: shopName.trim(),
