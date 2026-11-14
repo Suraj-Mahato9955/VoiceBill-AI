@@ -17,7 +17,6 @@ function VoiceBill() {
   const [items, setItems] = useState([]);
   const [messages, setMessages] = useState([]);
 
-  // Billing History
   const [bills, setBills] = useState([]);
   const [loadingBills, setLoadingBills] = useState(false);
   const [savingBill, setSavingBill] = useState(false);
