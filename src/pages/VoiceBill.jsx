@@ -1,3 +1,4 @@
+```js
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
@@ -21,6 +22,10 @@ function VoiceBill() {
   const [bills, setBills] = useState([]);
   const [loadingBills, setLoadingBills] = useState(false);
   const [savingBill, setSavingBill] = useState(false);
+
+  // Click-to-edit functionality
+  const [editingCell, setEditingCell] = useState(null);
+  const [editValue, setEditValue] = useState("");
 
   // Valid products
   const validItems = items.filter(
@@ -53,6 +58,47 @@ function VoiceBill() {
     );
   };
 
+  // Start editing quantity or price
+  const startEditing = (itemId, field, currentValue) => {
+    setEditingCell({
+      itemId,
+      field,
+    });
+
+    setEditValue(String(currentValue));
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingCell(null);
+    setEditValue("");
+  };
+
+  // Save edited quantity or price
+  const saveEditing = () => {
+    if (!editingCell) return;
+
+    const value = Number(editValue);
+
+    if (
+      editValue.trim() === "" ||
+      !Number.isFinite(value) ||
+      (editingCell.field === "quantity" && value <= 0) ||
+      (editingCell.field === "price" && value < 0)
+    ) {
+      cancelEditing();
+      return;
+    }
+
+    updateItem(
+      editingCell.itemId,
+      editingCell.field,
+      value
+    );
+
+    cancelEditing();
+  };
+
   // Add manual product
   const addManualItem = () => {
     setItems((previous) => [
@@ -71,6 +117,10 @@ function VoiceBill() {
     setItems((previous) =>
       previous.filter((item) => item.id !== id)
     );
+
+    if (editingCell?.itemId === id) {
+      cancelEditing();
+    }
   };
 
   // Add voice product
@@ -647,6 +697,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
       setCustomerMobile("");
       setDiscount("0");
       setMessages([]);
+      cancelEditing();
 
       // Refresh history
       await fetchBills();
@@ -1126,41 +1177,99 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
                 <div className="vb-live-product-fields">
 
+                  {/* Editable Quantity */}
                   <label>
                     Qty
 
-                    <input
-                      type="number"
-                      min="0.01"
-                      step="any"
-                      value={item.quantity}
-                      onChange={(e) =>
-                        updateItem(
-                          item.id,
-                          "quantity",
-                          e.target.value
-                        )
-                      }
-                    />
+                    {editingCell?.itemId === item.id &&
+                    editingCell?.field === "quantity" ? (
+
+                      <input
+                        type="number"
+                        min="0.01"
+                        step="any"
+                        value={editValue}
+                        autoFocus
+                        onChange={(e) =>
+                          setEditValue(e.target.value)
+                        }
+                        onBlur={saveEditing}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.currentTarget.blur();
+                          }
+
+                          if (e.key === "Escape") {
+                            cancelEditing();
+                          }
+                        }}
+                      />
+
+                    ) : (
+
+                      <span
+                        className="vb-editable-value"
+                        onClick={() =>
+                          startEditing(
+                            item.id,
+                            "quantity",
+                            item.quantity
+                          )
+                        }
+                        title="Click to edit quantity"
+                      >
+                        {item.quantity} ✎
+                      </span>
+
+                    )}
 
                   </label>
 
+                  {/* Editable Price */}
                   <label>
                     Price
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="any"
-                      value={item.price}
-                      onChange={(e) =>
-                        updateItem(
-                          item.id,
-                          "price",
-                          e.target.value
-                        )
-                      }
-                    />
+                    {editingCell?.itemId === item.id &&
+                    editingCell?.field === "price" ? (
+
+                      <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        value={editValue}
+                        autoFocus
+                        onChange={(e) =>
+                          setEditValue(e.target.value)
+                        }
+                        onBlur={saveEditing}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.currentTarget.blur();
+                          }
+
+                          if (e.key === "Escape") {
+                            cancelEditing();
+                          }
+                        }}
+                      />
+
+                    ) : (
+
+                      <span
+                        className="vb-editable-value"
+                        onClick={() =>
+                          startEditing(
+                            item.id,
+                            "price",
+                            item.price
+                          )
+                        }
+                        title="Click to edit price"
+                      >
+                        Rs. {Number(item.price).toFixed(2)} ✎
+                      </span>
+
+                    )}
 
                   </label>
 
