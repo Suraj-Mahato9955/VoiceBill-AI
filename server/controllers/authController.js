@@ -16,7 +16,6 @@ upiId,
 } = req.body;
 
 
-// Check required fields
 if (
   !ownerName ||
   !shopName ||
