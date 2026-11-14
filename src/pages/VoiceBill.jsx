@@ -21,7 +21,6 @@ function VoiceBill() {
   const [loadingBills, setLoadingBills] = useState(false);
   const [savingBill, setSavingBill] = useState(false);
 
-  // Click-to-edit functionality
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState("");
 
