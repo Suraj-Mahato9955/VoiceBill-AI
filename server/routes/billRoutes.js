@@ -114,7 +114,6 @@ return res.status(500).json({
 }
 });
 
-// Delete a bill belonging to logged-in shop
 router.delete("/:id", authMiddleware, async (req, res) => {
 try {
 const bill = await Bill.findOneAndDelete({
