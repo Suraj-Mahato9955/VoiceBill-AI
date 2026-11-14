@@ -48,7 +48,6 @@ if (password !== confirmPassword) {
   });
 }
 
-// Normalize user details
 const normalizedEmail = email.trim().toLowerCase();
 const normalizedUsername = username.trim().toLowerCase();
 const normalizedMobile = mobile.trim();
