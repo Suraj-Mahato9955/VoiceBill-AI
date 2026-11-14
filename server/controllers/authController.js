@@ -66,7 +66,6 @@ if (existingShop) {
   });
 }
 
-// Hash password before saving
 const hashedPassword = await bcrypt.hash(password, 12);
 
 // Generate a unique Shop ID
