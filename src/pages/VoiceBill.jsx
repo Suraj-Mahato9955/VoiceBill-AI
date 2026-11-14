@@ -31,7 +31,6 @@ function VoiceBill() {
       Number(item.price) >= 0
   );
 
-  // Calculations
   const subtotal = validItems.reduce(
     (total, item) =>
       total + Number(item.quantity) * Number(item.price),
