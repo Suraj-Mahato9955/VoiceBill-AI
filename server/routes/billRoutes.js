@@ -4,7 +4,6 @@ const router = express.Router();
 const Bill = require("../models/Bill");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// Save a new bill
 router.post("/", authMiddleware, async (req, res) => {
 try {
 const {
