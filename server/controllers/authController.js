@@ -50,7 +50,6 @@ const normalizedEmail = email.trim().toLowerCase();
 const normalizedUsername = username.trim().toLowerCase();
 const normalizedMobile = mobile.trim();
 
-// Check existing account
 const existingShop = await Shop.findOne({
   $or: [
     { email: normalizedEmail },
