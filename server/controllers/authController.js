@@ -39,7 +39,6 @@ if (password.length < 8) {
   });
 }
 
-// Check password confirmation
 if (password !== confirmPassword) {
   return res.status(400).json({
     success: false,
