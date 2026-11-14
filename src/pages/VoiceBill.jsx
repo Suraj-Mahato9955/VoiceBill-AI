@@ -25,7 +25,6 @@ function VoiceBill() {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState("");
 
-  // Valid products
   const validItems = items.filter(
     (item) =>
       item.name.trim() &&
