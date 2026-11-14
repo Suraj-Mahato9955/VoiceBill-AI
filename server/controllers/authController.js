@@ -67,7 +67,6 @@ if (existingShop) {
 
 const hashedPassword = await bcrypt.hash(password, 12);
 
-// Generate a unique Shop ID
 let shopId;
 let shopIdExists = true;
 
