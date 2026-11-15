@@ -589,3 +589,78 @@ font-size: 12px;
   border-radius: 6px;
   outline: none;
 }
+/* Billing History Filters */
+
+.vb-history-filters {
+  background: #ffffff;
+  padding: 18px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid #e5e7eb;
+}
+
+.vb-history-filters input {
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.vb-history-filters input:focus {
+  border-color: #2563eb;
+}
+
+.vb-date-filters {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.vb-date-filters div {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.vb-date-filters label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.vb-history-filters button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.vb-history-filters button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+  .vb-date-filters {
+    flex-direction: column;
+  }
+
+  .vb-date-filters div {
+    width: 100%;
+  }
+
+  .vb-history-filters button {
+    width: 100%;
+  }
+}
