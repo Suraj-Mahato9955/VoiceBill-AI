@@ -32,7 +32,6 @@ function VoiceBill() {
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState("");
 
-  // Filter bills by customer name, mobile number and date
   const filteredBills = bills.filter((bill) => {
     const search = searchQuery.toLowerCase().trim();
 
