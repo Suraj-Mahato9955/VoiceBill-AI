@@ -146,7 +146,6 @@ function VoiceBill() {
     ]);
   };
 
-  // Remove product
   const removeItem = (id) => {
     setItems((previous) =>
       previous.filter((item) => item.id !== id)
