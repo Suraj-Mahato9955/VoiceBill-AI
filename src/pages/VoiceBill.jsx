@@ -194,7 +194,6 @@ Amount: Rs. ${(quantity * price).toFixed(2)}`;
       }
     }
 
-    // Change quantity
     if (!response) {
       const changeQuantityPattern =
         /(?:change|update|set)\s+(.+?)\s+quantity\s+to\s+(\d+(?:\.\d+)?)/i;
