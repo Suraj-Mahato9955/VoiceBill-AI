@@ -133,7 +133,6 @@ function VoiceBill() {
     cancelEditing();
   };
 
-  // Add manual product
   const addManualItem = () => {
     setItems((previous) => [
       ...previous,
