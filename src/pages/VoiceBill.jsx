@@ -104,7 +104,6 @@ function VoiceBill() {
     setEditValue(String(currentValue));
   };
 
-  // Cancel editing
   const cancelEditing = () => {
     setEditingCell(null);
     setEditValue("");
