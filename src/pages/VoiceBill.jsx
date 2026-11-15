@@ -17,13 +17,18 @@ function VoiceBill() {
   const [items, setItems] = useState([]);
   const [messages, setMessages] = useState([]);
 
+  // Billing History
   const [bills, setBills] = useState([]);
   const [loadingBills, setLoadingBills] = useState(false);
   const [savingBill, setSavingBill] = useState(false);
-
+  const [shopLogo, setShopLogo] = useState(
+    localStorage.getItem("voicebillShopLogo") || ""
+  );
+  // Click-to-edit functionality
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState("");
 
+  // Valid products
   const validItems = items.filter(
     (item) =>
       item.name.trim() &&
@@ -31,6 +36,7 @@ function VoiceBill() {
       Number(item.price) >= 0
   );
 
+  // Calculations
   const subtotal = validItems.reduce(
     (total, item) =>
       total + Number(item.quantity) * Number(item.price),
@@ -44,6 +50,7 @@ function VoiceBill() {
 
   const grandTotal = subtotal - discountAmount;
 
+  // Update product
   const updateItem = (id, field, value) => {
     setItems((previous) =>
       previous.map((item) =>
@@ -52,6 +59,7 @@ function VoiceBill() {
     );
   };
 
+  // Start editing quantity or price
   const startEditing = (itemId, field, currentValue) => {
     setEditingCell({
       itemId,
@@ -67,6 +75,7 @@ function VoiceBill() {
     setEditValue("");
   };
 
+  // Save edited quantity or price
   const saveEditing = () => {
     if (!editingCell) return;
 
@@ -104,6 +113,7 @@ function VoiceBill() {
     ]);
   };
 
+  // Remove product
   const removeItem = (id) => {
     setItems((previous) =>
       previous.filter((item) => item.id !== id)
@@ -331,6 +341,41 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
     }
   };
 
+  // Upload and save shop logo
+  const handleLogoUpload = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+      alert("Please upload a PNG or JPG image.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 1024 * 1024) {
+      alert("Logo size must be less than 1 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const logoData = reader.result;
+
+      try {
+        localStorage.setItem("voicebillShopLogo", logoData);
+        setShopLogo(logoData);
+        alert("Shop logo uploaded successfully!");
+      } catch (error) {
+        alert("Could not save logo. Please use a smaller image.");
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   // Convert dummy QR image into data URL for PDF
   const getDummyQRData = async () => {
     const response = await fetch("/dummy-qr.png");
@@ -368,7 +413,40 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
       const pageWidth = doc.internal.pageSize.getWidth();
 
       // Shop heading
+      // Shop logo
+      const savedLogo = localStorage.getItem("voicebillShopLogo");
+
+      if (savedLogo) {
+        const logoFormat = savedLogo.startsWith("data:image/png")
+          ? "PNG"
+          : "JPEG";
+
+        doc.addImage(
+          savedLogo,
+          logoFormat,
+          15,
+          10,
+          25,
+          25
+        );
+      }
+
+      // Shop heading
       doc.setFontSize(22);
+      doc.setFont("helvetica", "bold");
+
+      doc.text(shopName, pageWidth / 2, 20, {
+        align: "center",
+      });
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+
+      doc.text("INVOICE", pageWidth / 2, 30, {
+        align: "center",
+      });
+
+      doc.line(15, 35, pageWidth - 15, 35);
       doc.setFont("helvetica", "bold");
 
       doc.text(shopName, pageWidth / 2, 20, {
@@ -765,9 +843,8 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         <p className="vb-sidebar-label">BILLING</p>
 
         <button
-          className={`vb-nav-item ${
-            activeSection === "voice" ? "active" : ""
-          }`}
+          className={`vb-nav-item ${activeSection === "voice" ? "active" : ""
+            }`}
           onClick={() => {
             setActiveSection("voice");
             setMessage("");
@@ -777,9 +854,8 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         </button>
 
         <button
-          className={`vb-nav-item ${
-            activeSection === "manual" ? "active" : ""
-          }`}
+          className={`vb-nav-item ${activeSection === "manual" ? "active" : ""
+            }`}
           onClick={() => {
             setActiveSection("manual");
             setMessage("");
@@ -793,9 +869,8 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         <p className="vb-sidebar-label">HISTORY</p>
 
         <button
-          className={`vb-nav-item ${
-            activeSection === "history" ? "active" : ""
-          }`}
+          className={`vb-nav-item ${activeSection === "history" ? "active" : ""
+            }`}
           onClick={() => {
             setActiveSection("history");
             fetchBills();
@@ -988,9 +1063,8 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
                 />
 
                 <button
-                  className={`vb-mic-button ${
-                    listening ? "listening" : ""
-                  }`}
+                  className={`vb-mic-button ${listening ? "listening" : ""
+                    }`}
                   onClick={startVoiceBilling}
                   disabled={listening}
                   title="Speak command"
@@ -1110,6 +1184,32 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
           <span>✦</span>
 
         </div>
+        <div style={{ padding: "15px", textAlign: "center" }}>
+          <h3>Shop Logo</h3>
+
+          {shopLogo && (
+            <img
+              src={shopLogo}
+              alt="Shop Logo"
+              style={{
+                width: "90px",
+                height: "90px",
+                objectFit: "contain",
+                marginBottom: "10px",
+              }}
+            />
+          )}
+
+          <input
+            type="file"
+            accept="image/png,image/jpeg"
+            onChange={handleLogoUpload}
+          />
+
+          <p style={{ fontSize: "12px", color: "#777" }}>
+            Upload PNG or JPG (maximum 1 MB)
+          </p>
+        </div>
 
         <div className="vb-customer-fields">
 
@@ -1173,7 +1273,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
                     Qty
 
                     {editingCell?.itemId === item.id &&
-                    editingCell?.field === "quantity" ? (
+                      editingCell?.field === "quantity" ? (
 
                       <input
                         type="number"
@@ -1221,7 +1321,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
                     Price
 
                     {editingCell?.itemId === item.id &&
-                    editingCell?.field === "price" ? (
+                      editingCell?.field === "price" ? (
 
                       <input
                         type="number"
