@@ -247,7 +247,6 @@ Updated Price: Rs. ${price.toFixed(2)}`;
       }
     }
 
-    // Remove product
     if (!response) {
       const removeMatch = text.match(
         /(?:remove|delete)\s+(.+)/i
