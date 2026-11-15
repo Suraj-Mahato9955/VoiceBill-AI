@@ -155,7 +155,6 @@ function VoiceBill() {
     }
   };
 
-  // Add voice product
   const addProduct = (name, quantity, price) => {
     const product = {
       id: Date.now() + Math.random(),
