@@ -21,12 +21,55 @@ function VoiceBill() {
   const [bills, setBills] = useState([]);
   const [loadingBills, setLoadingBills] = useState(false);
   const [savingBill, setSavingBill] = useState(false);
+
+  // Billing History Filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   const [shopLogo, setShopLogo] = useState(
     localStorage.getItem("voicebillShopLogo") || ""
   );
+
   // Click-to-edit functionality
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState("");
+
+  // Filter bills by customer name, mobile number and date
+  const filteredBills = bills.filter((bill) => {
+    const search = searchQuery.toLowerCase().trim();
+
+    const customerName = (bill.customerName || "").toLowerCase();
+    const customerMobile = (bill.customerMobile || "").toString();
+
+    const matchesSearch =
+      customerName.includes(search) ||
+      customerMobile.includes(search);
+
+    const billDate = new Date(bill.createdAt);
+
+    if (Number.isNaN(billDate.getTime())) {
+      return false;
+    }
+
+    const year = billDate.getFullYear();
+    const month = String(billDate.getMonth() + 1).padStart(2, "0");
+    const day = String(billDate.getDate()).padStart(2, "0");
+
+    const formattedBillDate = `${year}-${month}-${day}`;
+
+    const matchesStartDate =
+      !startDate || formattedBillDate >= startDate;
+
+    const matchesEndDate =
+      !endDate || formattedBillDate <= endDate;
+
+    return (
+      matchesSearch &&
+      matchesStartDate &&
+      matchesEndDate
+    );
+  });
 
   // Valid products
   const validItems = items.filter(
@@ -412,7 +455,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
       const pageWidth = doc.internal.pageSize.getWidth();
 
-      // Shop heading
       // Shop logo
       const savedLogo = localStorage.getItem("voicebillShopLogo");
 
@@ -433,20 +475,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
       // Shop heading
       doc.setFontSize(22);
-      doc.setFont("helvetica", "bold");
-
-      doc.text(shopName, pageWidth / 2, 20, {
-        align: "center",
-      });
-
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
-
-      doc.text("INVOICE", pageWidth / 2, 30, {
-        align: "center",
-      });
-
-      doc.line(15, 35, pageWidth - 15, 35);
       doc.setFont("helvetica", "bold");
 
       doc.text(shopName, pageWidth / 2, 20, {
@@ -531,11 +559,13 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
         doc.text(productName, 15, y);
         doc.text(String(item.quantity), 95, y);
+
         doc.text(
           `Rs. ${Number(item.price).toFixed(2)}`,
           135,
           y
         );
+
         doc.text(
           `Rs. ${Number(item.amount).toFixed(2)}`,
           175,
@@ -652,6 +682,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
     } catch (error) {
       console.error("PDF generation error:", error);
+
       alert(
         "Could not generate PDF invoice. Please check that public/dummy-qr.png exists."
       );
@@ -688,8 +719,10 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
       }
 
       setBills(data.bills || []);
+
     } catch (error) {
       setMessage(error.message);
+
     } finally {
       setLoadingBills(false);
     }
@@ -773,8 +806,10 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
     } catch (error) {
       console.error("Save bill error:", error);
+
       setMessage(error.message);
       alert(error.message);
+
     } finally {
       setSavingBill(false);
     }
@@ -843,8 +878,9 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         <p className="vb-sidebar-label">BILLING</p>
 
         <button
-          className={`vb-nav-item ${activeSection === "voice" ? "active" : ""
-            }`}
+          className={`vb-nav-item ${
+            activeSection === "voice" ? "active" : ""
+          }`}
           onClick={() => {
             setActiveSection("voice");
             setMessage("");
@@ -854,8 +890,9 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         </button>
 
         <button
-          className={`vb-nav-item ${activeSection === "manual" ? "active" : ""
-            }`}
+          className={`vb-nav-item ${
+            activeSection === "manual" ? "active" : ""
+          }`}
           onClick={() => {
             setActiveSection("manual");
             setMessage("");
@@ -869,8 +906,9 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         <p className="vb-sidebar-label">HISTORY</p>
 
         <button
-          className={`vb-nav-item ${activeSection === "history" ? "active" : ""
-            }`}
+          className={`vb-nav-item ${
+            activeSection === "history" ? "active" : ""
+          }`}
           onClick={() => {
             setActiveSection("history");
             fetchBills();
@@ -910,17 +948,74 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
               <p className="vb-chat-notice">{message}</p>
             )}
 
+            {/* Billing History Filters */}
+            <div className="vb-history-filters">
+
+              <input
+                type="text"
+                placeholder="Search by customer name or mobile..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <div className="vb-date-filters">
+
+                <div>
+                  <label>From Date</label>
+
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label>To Date</label>
+
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setStartDate("");
+                  setEndDate("");
+                }}
+              >
+                Clear Filters
+              </button>
+
+            </div>
+
             <section className="vb-chat-messages">
 
               {loadingBills ? (
+
                 <p>Loading bills...</p>
+
               ) : bills.length === 0 ? (
+
                 <p className="vb-empty-products">
                   No saved bills found.
                 </p>
+
+              ) : filteredBills.length === 0 ? (
+
+                <p className="vb-empty-products">
+                  No bills match your search or selected dates.
+                </p>
+
               ) : (
 
-                bills.map((bill) => (
+                filteredBills.map((bill) => (
 
                   <div
                     className="vb-message assistant"
@@ -1018,9 +1113,11 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
             <section className="vb-chat-messages">
 
               {messages.length === 0 ? (
+
                 <div className="vb-empty-products">
                   Product details will appear here.
                 </div>
+
               ) : (
 
                 messages.map((item) => (
@@ -1063,8 +1160,9 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
                 />
 
                 <button
-                  className={`vb-mic-button ${listening ? "listening" : ""
-                    }`}
+                  className={`vb-mic-button ${
+                    listening ? "listening" : ""
+                  }`}
                   onClick={startVoiceBilling}
                   disabled={listening}
                   title="Speak command"
@@ -1184,7 +1282,10 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
           <span>✦</span>
 
         </div>
+
+        {/* Shop Logo */}
         <div style={{ padding: "15px", textAlign: "center" }}>
+
           <h3>Shop Logo</h3>
 
           {shopLogo && (
@@ -1209,6 +1310,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
           <p style={{ fontSize: "12px", color: "#777" }}>
             Upload PNG or JPG (maximum 1 MB)
           </p>
+
         </div>
 
         <div className="vb-customer-fields">
@@ -1273,7 +1375,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
                     Qty
 
                     {editingCell?.itemId === item.id &&
-                      editingCell?.field === "quantity" ? (
+                    editingCell?.field === "quantity" ? (
 
                       <input
                         type="number"
@@ -1321,7 +1423,7 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
                     Price
 
                     {editingCell?.itemId === item.id &&
-                      editingCell?.field === "price" ? (
+                    editingCell?.field === "price" ? (
 
                       <input
                         type="number"
