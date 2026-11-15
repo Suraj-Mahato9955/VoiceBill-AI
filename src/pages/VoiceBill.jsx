@@ -97,7 +97,6 @@ function VoiceBill() {
     );
   };
 
-  // Start editing quantity or price
   const startEditing = (itemId, field, currentValue) => {
     setEditingCell({
       itemId,
