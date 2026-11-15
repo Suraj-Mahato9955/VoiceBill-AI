@@ -29,7 +29,6 @@ function VoiceBill() {
     localStorage.getItem("voicebillShopLogo") || ""
   );
 
-  // Click-to-edit functionality
   const [editingCell, setEditingCell] = useState(null);
   const [editValue, setEditValue] = useState("");
 
