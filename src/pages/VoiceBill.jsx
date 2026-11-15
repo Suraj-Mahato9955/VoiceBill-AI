@@ -171,7 +171,6 @@ Price: Rs. ${Number(price).toFixed(2)}
 Amount: Rs. ${(quantity * price).toFixed(2)}`;
   };
 
-  // Process voice or text commands
   const processCommand = (rawCommand) => {
     const text = rawCommand.trim();
     const lower = text.toLowerCase();
