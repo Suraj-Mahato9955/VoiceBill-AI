@@ -179,7 +179,6 @@ Amount: Rs. ${(quantity * price).toFixed(2)}`;
 
     let response = "";
 
-    // Add product
     const addPattern =
       /(?:add\s+)?(\d+(?:\.\d+)?)\s*(kg|kgs|kilograms?|litres?|liters?|l|grams?|g|pieces?|pcs|packets?|packs?)?\s+(.+?)\s+at\s+₹?\s*(\d+(?:\.\d+)?)(?:\s*(?:rupees?|rs\.?|₹))?(?:\s+per\s+(?:kg|kgs|kilogram|litre|liter|l|piece|pc))?/i;
 
