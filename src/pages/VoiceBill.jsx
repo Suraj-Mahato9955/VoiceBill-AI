@@ -220,7 +220,6 @@ Updated Quantity: ${quantity}`;
       }
     }
 
-    // Change price
     if (!response) {
       const changePricePattern =
         /(?:change|update|set)\s+(.+?)\s+price\s+to\s+₹?\s*(\d+(?:\.\d+)?)/i;
