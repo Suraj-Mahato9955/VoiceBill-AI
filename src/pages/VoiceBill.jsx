@@ -268,7 +268,6 @@ Updated Price: Rs. ${price.toFixed(2)}`;
       }
     }
 
-    // Discount
     if (!response) {
       const discountMatch = text.match(
         /(?:add|apply|give)\s+(\d+(?:\.\d+)?)\s*%?\s*discount/i
