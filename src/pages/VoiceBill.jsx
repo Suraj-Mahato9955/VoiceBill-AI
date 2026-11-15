@@ -67,7 +67,6 @@ function VoiceBill() {
     );
   });
 
-  // Valid products
   const validItems = items.filter(
     (item) =>
       item.name.trim() &&
