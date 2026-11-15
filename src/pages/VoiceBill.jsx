@@ -110,7 +110,6 @@ function VoiceBill() {
     setEditValue("");
   };
 
-  // Save edited quantity or price
   const saveEditing = () => {
     if (!editingCell) return;
 
