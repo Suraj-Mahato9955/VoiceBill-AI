@@ -364,7 +364,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
     }
   };
 
-  // Upload and save shop logo
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
 
