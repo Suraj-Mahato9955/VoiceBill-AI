@@ -319,7 +319,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
     setCommand("");
   };
 
-  // Voice billing
   const startVoiceBilling = () => {
     const SpeechRecognition =
       window.SpeechRecognition ||
