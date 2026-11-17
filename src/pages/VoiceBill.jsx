@@ -398,7 +398,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
     reader.readAsDataURL(file);
   };
 
-  // Convert dummy QR image into data URL for PDF
   const getDummyQRData = async () => {
     const response = await fetch("/dummy-qr.png");
 
