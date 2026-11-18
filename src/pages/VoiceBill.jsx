@@ -311,7 +311,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
     setMessage("");
   };
 
-  // Send text command
   const sendCommand = () => {
     if (!command.trim()) return;
 
