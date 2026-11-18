@@ -502,7 +502,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         97
       );
 
-      // Table heading
       let y = 112;
 
       doc.setFont("helvetica", "bold");
