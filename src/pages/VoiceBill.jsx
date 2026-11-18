@@ -432,7 +432,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
 
       const pageWidth = doc.internal.pageSize.getWidth();
 
-      // Shop logo
       const savedLogo = localStorage.getItem("voicebillShopLogo");
 
       if (savedLogo) {
