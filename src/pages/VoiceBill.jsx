@@ -451,7 +451,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         );
       }
 
-      // Shop heading
       doc.setFontSize(22);
       doc.setFont("helvetica", "bold");
 
