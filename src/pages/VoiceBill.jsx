@@ -550,7 +550,6 @@ Grand Total: Rs. ${grandTotal.toFixed(2)}`;
         y += rowHeight;
       });
 
-      // Totals
       if (y > 235) {
         doc.addPage();
         y = 25;
